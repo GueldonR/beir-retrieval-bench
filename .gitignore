@@ -1,0 +1,60 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg
+*.egg-info/
+dist/
+build/
+eggs/
+.eggs/
+pip-wheel-metadata/
+
+# Virtual environments
+.venv/
+venv/
+myenv/
+env/
+ENV/
+
+# Tooling caches
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.pytype/
+.coverage
+htmlcov/
+.tox/
+.nox/
+pytest-cache-files-*/
+.cache/
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# Project data & local runtime
+data/
+qdrant_data/
+test.json
+eval/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# IDE / OS
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+
+# Local scratch
+dataexploration.ipynb
+src/components/dump.py
