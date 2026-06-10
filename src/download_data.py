@@ -8,9 +8,7 @@ from beir import util
 from src.config.general_config import DATASET_STRINGS
 from src.config.settings import DATA_ROOT
 
-BEIR_URL = (
-    "https://public.ukp.informatik.tu-darmstadt.de/thakur/BEIR/datasets/{}.zip"
-)
+BEIR_URL = "https://public.ukp.informatik.tu-darmstadt.de/thakur/BEIR/datasets/{}.zip"
 
 
 def download_datasets(

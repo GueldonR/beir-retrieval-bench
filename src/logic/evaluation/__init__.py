@@ -3,4 +3,9 @@ from src.logic.evaluation.EvaluationLogic_HybridSearch import EvaluationLogic_Hy
 from src.logic.evaluation.EvaluationLogic_HyDE import EvaluationLogic_HyDE
 from src.logic.evaluation.EvaluationLogic_HyPE import EvaluationLogic_HyPE
 
-__all__ = ["EvaluationLogic", "EvaluationLogic_HyDE", "EvaluationLogic_HyPE", "EvaluationLogic_HybridSearch"]
+__all__ = [
+    "EvaluationLogic",
+    "EvaluationLogic_HyDE",
+    "EvaluationLogic_HyPE",
+    "EvaluationLogic_HybridSearch",
+]

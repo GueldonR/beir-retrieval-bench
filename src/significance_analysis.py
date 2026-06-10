@@ -74,17 +74,16 @@ def run_significance_tests(
     print("Effect size: raw mean difference with 95% confidence interval")
     print()
     print(
-        f"{'Dataset':<12} {'Method':<8} {'n':>5}  "
-        f"{'d NDCG@10':>10}  {'95% CI':>20}  {'p-value':>9}"
+        f"{'Dataset':<12} {'Method':<8} {'n':>5}  {'d NDCG@10':>10}  {'95% CI':>20}  {'p-value':>9}"
     )
     print("-" * 72)
 
     results = []
 
     for dataset in DATASETS:
-        _, _, qrels = GenericDataLoader(
-            data_folder=str(DATASET_FOLDER_PATHS[dataset])
-        ).load(split="test")
+        _, _, qrels = GenericDataLoader(data_folder=str(DATASET_FOLDER_PATHS[dataset])).load(
+            split="test"
+        )
 
         base_run = _load_run(find_latest_run_file("base", dataset, root))
         base_scores = _per_query_ndcg(base_run, qrels, K)
@@ -105,17 +104,18 @@ def run_significance_tests(
 
             ci_str = f"[{ci.low:+.4f}, {ci.high:+.4f}]"
             print(
-                f"{dataset:<12} {method:<8} {len(qids):>5}  "
-                f"{diff:>+10.4f}  {ci_str:>20}  {p:>9.4f}"
+                f"{dataset:<12} {method:<8} {len(qids):>5}  {diff:>+10.4f}  {ci_str:>20}  {p:>9.4f}"
             )
 
-            results.append({
-                "dataset": dataset,
-                "method": method,
-                "diff": diff,
-                "ci_low": ci.low,
-                "ci_high": ci.high,
-            })
+            results.append(
+                {
+                    "dataset": dataset,
+                    "method": method,
+                    "diff": diff,
+                    "ci_low": ci.low,
+                    "ci_high": ci.high,
+                }
+            )
 
         print()
 
@@ -135,9 +135,7 @@ def plot_forest(
     rows = []
     for dataset in DATASETS:
         for method in METHODS:
-            row = next(
-                x for x in results if x["dataset"] == dataset and x["method"] == method
-            )
+            row = next(x for x in results if x["dataset"] == dataset and x["method"] == method)
             rows.append(row)
     rows = list(reversed(rows))
 

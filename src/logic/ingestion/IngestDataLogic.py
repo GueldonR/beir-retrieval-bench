@@ -11,8 +11,14 @@ from src.config import DATASET_PATHS
 
 
 class IngestDataLogic:
-
-    def __init__(self, target_dataset, target_collection, qdrant_instance = None, sparse_model_name="Qdrant/bm25", hybrid_search=False):
+    def __init__(
+        self,
+        target_dataset,
+        target_collection,
+        qdrant_instance=None,
+        sparse_model_name="Qdrant/bm25",
+        hybrid_search=False,
+    ):
         self.qdrant_client = qdrant_instance or QdrantInstance()
         self.collection_name = target_collection
         self.embedding_model = EmbeddingModelInstance()
@@ -22,13 +28,18 @@ class IngestDataLogic:
         if not self.dataset:
             raise ValueError(f"Dataset '{target_dataset}' not found in DATASET_PATHS")
 
-    def ingest_data(self, limit_docs: Optional[int] = None, upload_batch_size: int = 250, embedding_batch_size: int = 64):
+    def ingest_data(
+        self,
+        limit_docs: Optional[int] = None,
+        upload_batch_size: int = 250,
+        embedding_batch_size: int = 64,
+    ):
         points = []
         batch_docs = []
         doc_counter = 0
-          
+
         for doc in self._iter_dataset(self.dataset):
-            if not doc: 
+            if not doc:
                 raise ValueError("doc returned empty line")
 
             if limit_docs and doc_counter >= limit_docs:
@@ -43,7 +54,6 @@ class IngestDataLogic:
                 points.extend(self._create_points_batch(batch_docs))
                 batch_docs.clear()
 
-            
             if len(points) >= upload_batch_size:
                 print(f"Processed {doc_counter} docs. Uploading batch...")
                 self._upload_batch(points)
@@ -66,6 +76,7 @@ class IngestDataLogic:
     """
     Helpers
     """
+
     def _iter_dataset(self, dataset_path):
         """
         Traverses singular datasets
@@ -74,7 +85,7 @@ class IngestDataLogic:
         """
         with open(dataset_path, "r", encoding="utf-8") as f:
             for line in f:
-                try: 
+                try:
                     yield json.loads(line)
                 except json.JSONDecodeError as e:
                     print(f"Skipping malformed line: {e}")
@@ -82,7 +93,7 @@ class IngestDataLogic:
     def _build_full_text(self, doc: dict) -> str:
         """
         Takes a dictonary and concatenates the field to make full text
-        param - instance, dictionary 
+        param - instance, dictionary
         returns - concatenated string
         """
         if not doc:
@@ -95,15 +106,14 @@ class IngestDataLogic:
         Uploads the points in a batch
         param - instance, list of points (batch)
         """
-        try: 
+        try:
             self.qdrant_client.client.upsert(
                 collection_name=self.collection_name,
                 points=points,
             )
         except Exception as e:
             print(f"Upsert failed: {e}")
-            
-        
+
     def _create_point(self, doc, doc_counter):
         """
         DEPRECATED!
@@ -129,12 +139,9 @@ class IngestDataLogic:
         return PointStruct(
             id=doc_counter,
             vector=point_vector,
-            payload={
-                "doc_id": str(doc.get("_id")),
-                "text": full_text
-            },
+            payload={"doc_id": str(doc.get("_id")), "text": full_text},
         )
-    
+
     def _create_points_batch(self, docs_batch: list[dict]):
         """
         Embeds a list of docs and maps them into a list of pointstructs
@@ -143,11 +150,11 @@ class IngestDataLogic:
         """
         if not docs_batch:
             return []
-        
+
         texts = [self._build_full_text(doc) for doc in docs_batch]
 
-        vectors_batch = self.embedding_model.embed_texts_batch(texts)  
-        
+        vectors_batch = self.embedding_model.embed_texts_batch(texts)
+
         points = []
 
         for i, (doc, vec) in enumerate(zip(docs_batch, vectors_batch)):
@@ -159,12 +166,11 @@ class IngestDataLogic:
             else:
                 point_vector = vec
 
-            points.append(PointStruct(
-                id=str(uuid.uuid4()),
-                vector=point_vector,
-                payload={
-                    "doc_id": str(doc.get("_id")),
-                    "text": texts[i]
-                }
-            ))
+            points.append(
+                PointStruct(
+                    id=str(uuid.uuid4()),
+                    vector=point_vector,
+                    payload={"doc_id": str(doc.get("_id")), "text": texts[i]},
+                )
+            )
         return points

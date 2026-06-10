@@ -15,6 +15,7 @@ class IngestDataLogicHype(IngestDataLogic):
 
     Uses pregenerated queries: "HYPE_QUERIES"
     """
+
     def __init__(self, target_dataset, target_collection, qdrant_instance=None):
         super().__init__(target_dataset, target_collection, qdrant_instance)
         if target_dataset not in HYPE_QUERIES:
@@ -23,7 +24,12 @@ class IngestDataLogicHype(IngestDataLogic):
         self.hype_prompts = self._get_dict(self.hype_path)
 
     @override
-    def ingest_data(self, limit_docs: Optional[int] = None, upload_batch_size: int = 250, embedding_batch_size: int = 32):
+    def ingest_data(
+        self,
+        limit_docs: Optional[int] = None,
+        upload_batch_size: int = 250,
+        embedding_batch_size: int = 32,
+    ):
         points = []
         batch_docs = []
         doc_counter = 0
@@ -37,7 +43,7 @@ class IngestDataLogicHype(IngestDataLogic):
                 break
 
             doc_counter += 1
-            
+
             doc_id = str(doc.get("_id"))
             hypo_texts = self.hype_prompts.get(doc_id)
 
@@ -45,12 +51,11 @@ class IngestDataLogicHype(IngestDataLogic):
                 raise ValueError(f"Missing HyPE queries for doc_id {doc_id}")
 
             for hypo_text in hypo_texts:
-            
                 batch_docs.append({"doc_id": doc_id, "text": hypo_text})
                 if len(batch_docs) >= embedding_batch_size:
                     points.extend(self._create_points_batch(batch_docs))
                     batch_docs.clear()
-               
+
                 if len(points) >= upload_batch_size:
                     print(f"Processed {doc_counter} embeddings. Uploading batch...")
                     self._upload_batch(points)
@@ -76,14 +81,16 @@ class IngestDataLogicHype(IngestDataLogic):
 
         points = []
         for i, (doc, vec) in enumerate(zip(docs_batch, vectors_batch)):
-            points.append(PointStruct(
-                id=str(uuid.uuid4()),
-                vector=vec,
-                payload={
-                    "doc_id": doc["doc_id"],  # original document id
-                    "text": doc["text"] # hypo text
-                }
-            ))
+            points.append(
+                PointStruct(
+                    id=str(uuid.uuid4()),
+                    vector=vec,
+                    payload={
+                        "doc_id": doc["doc_id"],  # original document id
+                        "text": doc["text"],  # hypo text
+                    },
+                )
+            )
         return points
 
     def _get_dict(self, path):
