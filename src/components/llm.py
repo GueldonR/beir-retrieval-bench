@@ -1,5 +1,4 @@
 from openai import OpenAI
-from openai.types.chat import ChatCompletion
 
 from src.config.settings import VLLM_URL
 
@@ -20,7 +19,7 @@ class QwenInstance:
         self.client = OpenAI(base_url=self.url, api_key=self.api_key)
         self.max_tokens = 512
 
-    def default_chat(self, message, is_thinking: bool = False) -> ChatCompletion:
+    def default_chat(self, message, is_thinking: bool = False) -> str:
         resp = self.client.chat.completions.create(
             model=self.model_id,
             messages=[{"role": "user", "content": message}],
@@ -28,7 +27,7 @@ class QwenInstance:
             max_tokens=self.max_tokens,
         )
         msg = resp.choices[0].message
-        return (msg.content,)
+        return msg.content or ""
 
 
 class QwenInstanceHyde(QwenInstance):
@@ -56,4 +55,4 @@ class QwenInstanceHyde(QwenInstance):
             max_tokens=self.max_tokens,
         )
         msg = resp.choices[0].message
-        return msg.content
+        return msg.content or ""
