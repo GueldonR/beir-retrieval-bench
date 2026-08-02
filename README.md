@@ -1,4 +1,4 @@
-# Examensarbete
+# beir-retrieval-bench
 
 Retrieval benchmark on [BEIR](https://github.com/beir-cellar/beir) datasets: **baseline** (dense), **HyDE**, **HyPE**, and **hybrid** (dense + BM25 via RRF). Stack: Qdrant, Qwen embeddings, vLLM.
 
