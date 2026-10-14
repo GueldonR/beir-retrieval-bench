@@ -19,6 +19,9 @@ services:
   vllm:
     image: vllm/vllm-openai:nightly
     container_name: vllm-server
+    depends_on:
+      qwen3-embedding-vllm:
+        condition: service_healthy
     ports:
       - "8100:8000"
     ipc: host
@@ -34,17 +37,23 @@ services:
               count: 1
               capabilities: [gpu]
     command: >
-      --model Qwen/Qwen3.5-9B
+      --model Qwen/Qwen3.5-0.8B
       --enable-prefix-caching
       --enable-chunked-prefill
       --max-model-len 2000
       --max-num-seqs 256
-      --gpu-memory-utilization 0.9
+      --gpu-memory-utilization 0.30
       --language-model-only
 
   qwen3-embedding-vllm:
     image: vllm/vllm-openai:nightly
     container_name: qwen3-embedding-vllm
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 60
+      start_period: 60s
     ports:
       - "12434:8000"
     volumes:
@@ -61,7 +70,7 @@ services:
     command: >
       --model Qwen/Qwen3-Embedding-0.6B
       --max-model-len 1024
-      --gpu-memory-utilization 0.1
+      --gpu-memory-utilization 0.30
 
 configs:
   qdrant_config:
