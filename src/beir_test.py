@@ -1,5 +1,6 @@
 from src.components.db import QdrantInstance
 from src.components.embedding import EmbeddingModelInstance
+from src.config.run_config import COLLECTIONS, DATASET
 from src.logic.evaluation import (
     EvaluationLogic,
     EvaluationLogic_HybridSearch,
@@ -107,4 +108,4 @@ def hybridsearchEvaluation(target_dataset: str, target_collection: str):
 
 if __name__ == "__main__":
     # for s in DATASET_STRINGS:
-    baseEvalutation("scifact", "scifact")
+    baseEvalutation(DATASET, COLLECTIONS["base"])
