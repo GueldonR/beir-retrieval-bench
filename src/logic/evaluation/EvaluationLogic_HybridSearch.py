@@ -48,11 +48,11 @@ class EvaluationLogic_HybridSearch(EvaluationLogic):
                     point.payload["doc_id"]: point.score for point in res.points if point.payload
                 }
 
-        ndcg, _map, recall, precision, mrr, per_query_scores = self._get_evaluation_result(
+        ndcg, _map, recall, precision, mrr = self._get_evaluation_result(
             qrels=qrels, results=results
         )
 
-        self.save_results_to_instance(results, ndcg, _map, recall, precision, mrr, per_query_scores)
+        self.save_results_to_instance(results, ndcg, _map, recall, precision, mrr)
 
         self._result_printer(
             ndcg=self.ndcg,
@@ -64,4 +64,4 @@ class EvaluationLogic_HybridSearch(EvaluationLogic):
 
         self._save_to_disk(test_type="hybrid-rrf")
 
-        return results, ndcg, _map, recall, precision, mrr, per_query_scores
+        return results, ndcg, _map, recall, precision, mrr

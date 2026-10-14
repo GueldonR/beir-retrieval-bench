@@ -1,6 +1,5 @@
 # this will contain the evaluationlogic from beir
 # this classe's methods should be called from testing.py
-import json
 import logging
 import os
 from datetime import datetime
@@ -37,7 +36,6 @@ class EvaluationLogic:
         self.recall: dict[int, float] = {}
         self.precision: dict[int, float] = {}
         self.mrr: dict[int, float] = {}
-        self.per_query_scores: dict = {}  # Add this for per-query scores
 
         # evaluation needs max in k value range to eval correctly across all ranges
         self.k_value_range = [1, 3, 5, 10, 100]
@@ -83,12 +81,12 @@ class EvaluationLogic:
                     point.payload["doc_id"]: point.score for point in res.points if point.payload
                 }
 
-        ndcg, _map, recall, precision, mrr, single_scores = self._get_evaluation_result(
+        ndcg, _map, recall, precision, mrr = self._get_evaluation_result(
             qrels=qrels, results=results
         )
 
         # store metrics to instance
-        self.save_results_to_instance(results, ndcg, _map, recall, precision, mrr, single_scores)
+        self.save_results_to_instance(results, ndcg, _map, recall, precision, mrr)
         # print results
         self._result_printer(
             ndcg=self.ndcg,
@@ -100,16 +98,16 @@ class EvaluationLogic:
         # save to disk
         self._save_to_disk()
 
-        return results, ndcg, _map, recall, precision, mrr, single_scores
+        return results, ndcg, _map, recall, precision, mrr
 
     def get_run_configurations(self, batch_size: int = 32):
         corpus, queries, qrels = self._load_local_data()
-        results = {}
+        results: dict[str, dict[str, float]] = {}
         batch_size = batch_size
         return queries, qrels, results, batch_size
 
     def save_results_to_instance(
-        self, results, ndcg, _map, recall, precision, mrr, per_query_scores
+        self, results, ndcg, _map, recall, precision, mrr
     ):
         self.results = results
         self.ndcg = ndcg
@@ -117,7 +115,6 @@ class EvaluationLogic:
         self.recall = recall
         self.precision = precision
         self.mrr = mrr
-        self.per_query_scores = per_query_scores
 
     # helpers
     def _load_local_data(self):
@@ -149,11 +146,11 @@ class EvaluationLogic:
             ndcg, _map, recall, precision, mrr
         """
         evaluator = EvaluateRetrieval()
-        ndcg, _map, recall, precision, single_scores = evaluator.evaluate(
+        ndcg, _map, recall, precision = evaluator.evaluate(
             qrels, results, k_values=self.k_value_range
         )
         mrr = evaluator.evaluate_custom(qrels, results, k_values=[1, 3, 5, 10], metric="mrr")
-        return ndcg, _map, recall, precision, mrr, single_scores
+        return ndcg, _map, recall, precision, mrr
 
     def _save_to_disk(self, test_type: str = "base"):
 
@@ -180,11 +177,6 @@ class EvaluationLogic:
                 self.precision,
                 self.mrr,
             )
-            # per query scores
-            with open(
-                os.path.join(run_folder, f"{self.target_dataset_string}_per_query_scores.json"), "w"
-            ) as f:
-                json.dump(self.per_query_scores, f, indent=2)
         except IOError as e:
             print(f"Error saving file:{e}")
 

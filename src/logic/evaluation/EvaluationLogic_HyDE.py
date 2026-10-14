@@ -55,12 +55,12 @@ class EvaluationLogic_HyDE(EvaluationLogic):
                     point.payload["doc_id"]: point.score for point in res.points if point.payload
                 }
 
-        ndcg, _map, recall, precision, mrr, per_query_scores = self._get_evaluation_result(
+        ndcg, _map, recall, precision, mrr = self._get_evaluation_result(
             qrels=qrels, results=results
         )
 
         # store metrics for _save_to_disk()
-        self.save_results_to_instance(results, ndcg, _map, recall, precision, mrr, per_query_scores)
+        self.save_results_to_instance(results, ndcg, _map, recall, precision, mrr)
 
         self._result_printer(
             ndcg=self.ndcg,
@@ -72,13 +72,13 @@ class EvaluationLogic_HyDE(EvaluationLogic):
 
         self._save_to_disk(test_type="hyde")
 
-        return results, ndcg, _map, recall, precision, mrr, per_query_scores
+        return results, ndcg, _map, recall, precision, mrr
 
     @override
     def get_run_configurations(self, batch_size: int = 32):
         _, _, qrels = self._load_local_data()
         queries = self._get_hypo_document_dict(self.hypo_queries_path)
-        results = {}
+        results: dict[str, dict[str, float]] = {}
         batch_size = batch_size
         return queries, qrels, results, batch_size
 

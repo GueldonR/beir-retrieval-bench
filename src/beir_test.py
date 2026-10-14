@@ -20,7 +20,7 @@ def baseEvalutation(target_dataset: str, target_collection: str):
         embedding_model_instance=embedding_model,
     )
 
-    results, ndcg, _map, recall, precision, mrr, single_score = evaluator.run_evaluation(
+    results, ndcg, _map, recall, precision, mrr = evaluator.run_evaluation(
         target_collection=target_collection
     )
 
@@ -44,7 +44,7 @@ def hydeEvaluation(target_dataset: str, target_collection: str):
         embedding_model_instance=embedding_model,
     )
 
-    results, ndcg, _map, recall, precision, mrr, _ = evaluator.run_evaluation(
+    results, ndcg, _map, recall, precision, mrr = evaluator.run_evaluation(
         target_collection=target_collection
     )
 
@@ -67,7 +67,7 @@ def hypeEvaluation(target_dataset: str, target_collection: str):
         vector_store=vector_store,
         embedding_model_instance=embedding_model,
     )
-    results, ndcg, _map, recall, precision, mrr, _ = evaluator.run_evaluation(
+    results, ndcg, _map, recall, precision, mrr = evaluator.run_evaluation(
         target_collection=target_collection
     )
 
@@ -91,7 +91,7 @@ def hybridsearchEvaluation(target_dataset: str, target_collection: str):
         embedding_model_instance=embedding_model,
     )
 
-    results, ndcg, _map, recall, precision, mrr, _ = evaluator.run_evaluation(
+    results, ndcg, _map, recall, precision, mrr = evaluator.run_evaluation(
         target_collection=target_collection
     )
 

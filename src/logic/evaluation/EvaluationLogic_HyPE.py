@@ -45,12 +45,12 @@ class EvaluationLogic_HyPE(EvaluationLogic):
                 # removes and maxes out scores for duped ids
                 results[qid] = self._aggregate_retrived_results_(qid=qid, res=res)
 
-        ndcg, _map, recall, precision, mrr, per_query_scores = self._get_evaluation_result(
+        ndcg, _map, recall, precision, mrr = self._get_evaluation_result(
             qrels=qrels, results=results
         )
 
         # store metrics for _save_to_disk()
-        self.save_results_to_instance(results, ndcg, _map, recall, precision, mrr, per_query_scores)
+        self.save_results_to_instance(results, ndcg, _map, recall, precision, mrr)
 
         self._result_printer(
             ndcg=self.ndcg,
@@ -61,10 +61,10 @@ class EvaluationLogic_HyPE(EvaluationLogic):
         )
         self._save_to_disk(test_type="hype")
 
-        return results, ndcg, _map, recall, precision, mrr, per_query_scores
+        return results, ndcg, _map, recall, precision, mrr
 
     def _aggregate_retrived_results_(self, qid: str, res):
-        doc_scores = {}
+        doc_scores: dict[str, float] = {}
 
         for point in res.points:
             doc_id = point.payload["doc_id"]
