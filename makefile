@@ -8,4 +8,9 @@ setup:
 	uv run python -m src.setup_infra
 
 eval:
-	uv run python -m src.beir_test
+	docker compose run --rm eval
+
+dataset ?= scifact
+
+download:
+	uv run python -m src.download_data $(dataset)

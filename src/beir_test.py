@@ -109,3 +109,4 @@ def hybridsearchEvaluation(target_dataset: str, target_collection: str):
 if __name__ == "__main__":
     # for s in DATASET_STRINGS:
     baseEvalutation(DATASET, COLLECTIONS["base"])
+    hybridsearchEvaluation(DATASET, COLLECTIONS["hybrid"])

@@ -10,7 +10,9 @@ def setup_infra_base():
     setup.setup_collection(collection_name=COLLECTIONS["base"])
 
     ingestData = IngestDataLogic(
-        qdrant_instance=setup, target_dataset=DATASET, target_collection=COLLECTIONS["base"]
+        qdrant_instance=setup,
+        target_dataset=DATASET,
+        target_collection=COLLECTIONS["base"],
     )
 
     ingestData.ingest_data(embedding_batch_size=EMBEDDING_BATCH_SIZE)
@@ -116,3 +118,4 @@ def setup_infra_all_hybrid():
 
 if __name__ == "__main__":
     setup_infra_base()
+    setup_infra_hybrid()
