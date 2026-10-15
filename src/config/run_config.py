@@ -1,4 +1,4 @@
-# Single source for setup_infra (ingest) and beir_test (eval), so collection names can't drift.
+# Single source for setup_infra (ingest) and beir_test (eval)
 DATASET = "scifact"
 
 COLLECTIONS = {

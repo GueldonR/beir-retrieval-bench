@@ -78,7 +78,7 @@ services:
       --max-model-len 1024
       --gpu-memory-utilization 0.30
 
-  eval:
+  eval: &python-job
     image: ghcr.io/astral-sh/uv:python3.11-bookworm-slim
     working_dir: /app
     volumes:
@@ -90,6 +90,7 @@ services:
       UV_PROJECT_ENVIRONMENT: /venv
       UV_LINK_MODE: copy # the cache and /app are on different volumes
       HF_HOME: /app/data/hub
+      PYTHONUNBUFFERED: 1 # print() shows up live, even without a terminal attached
       # Inside the compose network: service name + container port, not localhost.
       QDRANT_URL: http://qdrant:6333
       VLLM_URL: http://vllm:8000/v1
@@ -98,6 +99,10 @@ services:
       - qdrant
     profiles: [tools]
     command: uv run python -m src.beir_test
+
+  setup:
+    <<: *python-job
+    command: uv run python -m src.setup_infra
 
 volumes:
   eval_venv:

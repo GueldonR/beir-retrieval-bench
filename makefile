@@ -5,7 +5,7 @@ down:
 	docker compose down
 
 setup:
-	uv run python -m src.setup_infra
+	docker compose run --rm setup
 
 eval:
 	docker compose run --rm eval
